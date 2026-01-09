@@ -1,15 +1,3 @@
-承知いたしました。私の勇み足でした。申し訳ありません。
-**「Colabで取得していた範囲」に厳密に合わせ、余計なデータ（X200など）は除外します。**
-
-ただし、将来的に「やっぱり速報データも欲しい」となった時に、**一行コメントを外すだけで追加できる** ような構成にしておきます。
-
-GitHubの `jradb_update.py` を以下のコードに修正（上書き）してください。
-
-### 🛠 修正版 `jradb_update.py` (Colab範囲準拠)
-
-変更点は `TARGET_DATA` の中身だけです。Colabのコードにあったファイルのみを有効化し、それ以外はリストから外しました。
-
-```python
 import os
 import requests
 import zipfile
@@ -241,5 +229,3 @@ def process_update():
 
 if __name__ == "__main__":
     process_update()
-
-```
