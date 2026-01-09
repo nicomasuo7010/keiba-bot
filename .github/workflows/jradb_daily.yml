@@ -2,8 +2,10 @@ name: JRADB Daily Update
 
 on:
   schedule:
-    # 毎日 日本時間 6:00 (UTC 21:00) に実行
-    - cron: '0 21 * * *'
+    # GitHubは世界標準時(UTC)で動くため、日本時間(JST)から-9時間した値を設定します。
+    # 1回目: 12:30 JST (UTC 03:30) -> 月曜の成績・マスタ、金曜の出馬表(XSIN)を回収
+    # 2回目: 20:00 JST (UTC 11:00) -> 木曜の地方成績・日曜の特別登録などを回収
+    - cron: '30 3,11 * * *'
   workflow_dispatch: # 手動実行ボタン有効化
 
 jobs:
@@ -15,6 +17,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Python
+        # 警告が出ていたため 3.9 から 3.10 へアップグレード
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
@@ -22,7 +25,9 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
+          # lhafileのビルドに必要なシステムライブラリ
           sudo apt-get install -y python3-dev libssl-dev
+          # Pythonライブラリのインストール
           pip install requests lxml pydrive2 oauth2client lhafile
 
       - name: Create Service Account JSON
