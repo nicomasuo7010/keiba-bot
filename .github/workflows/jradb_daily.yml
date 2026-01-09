@@ -1,0 +1,39 @@
+name: JRADB Daily Update
+
+on:
+  schedule:
+    # 毎日 日本時間 6:00 (UTC 21:00) に実行
+    - cron: '0 21 * * *'
+  workflow_dispatch: # 手動実行ボタン有効化
+
+jobs:
+  update-jradb:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-dev libssl-dev
+          pip install requests lxml pydrive2 oauth2client lhafile
+
+      - name: Create Service Account JSON
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        run: |
+          echo "$GCP_SA_KEY" > service_account.json
+
+      - name: Run Update Script
+        env:
+          JRADB_USER: ${{ secrets.JRADB_USER }}
+          JRADB_PASS: ${{ secrets.JRADB_PASS }}
+          DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
+        run: python jradb_update.py
